@@ -50,7 +50,11 @@
 
         public IEnumerable<IPostInfoViewModel> GetCategoryPostsInfo(int categoryId)
         {
-            throw new NotImplementedException();
+            IEnumerable<IPostInfoViewModel> posts = this.forumData.Posts
+                .Where(e => e.CategoryId == categoryId)
+                .Select(e => new PostInfoViewModel(e.Id e.Title, e.Replies.Count));
+
+            return posts;
         }
 
         public IPostViewModel GetPostViewModel(int postId)
