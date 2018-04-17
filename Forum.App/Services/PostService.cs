@@ -47,11 +47,15 @@
 
         private Category EnsureCategory(string postCategory)
         {
-            if (!this.forumData.Categories.Any(e => e.Name == postCategory))
+            Category category = this.forumData.Categories.FirstOrDefault(e => e.Name == postCategory);
+
+            if (category == null)
             {
-                return new Category(postCategory);
+                int categoryId = this.forumData.Categories.LastOrDefault()?.Id + 1 ?? 1;
+                category = new Category(categoryId, postCategory, new List<int>());
+                this.forumData.Categories.Add(category);
             }
-            return this.forumData.Categories.Where(e => e.Name == postCategory).First();
+            return category;
         }
 
         public void AddReplyToPost(int postId, string replyContents, int userId)
