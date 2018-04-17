@@ -24,12 +24,12 @@
 
         public string GetUserName(int userId)
         {
-            throw new NotImplementedException();
+            return this.forumData.Users.FirstOrDefault(u => u.Id == userId).Username;
         }
 
         public bool TryLogInUser(string username, string password)
         {
-            if(string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 return false;
             }
@@ -38,7 +38,7 @@
 
             session.Reset();
             session.LogIn(userToLog);
-            
+
             return true;
         }
 
@@ -47,7 +47,7 @@
             bool validUsername = !string.IsNullOrWhiteSpace(username) && username.Length > 3;
             bool validPassword = !string.IsNullOrWhiteSpace(password) && password.Length > 3;
 
-            if(!validUsername || !validPassword)
+            if (!validUsername || !validPassword)
             {
                 throw new ArgumentException("Username and Password must be longer than 3 symbols!");
             }

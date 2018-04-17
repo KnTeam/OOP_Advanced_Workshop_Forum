@@ -55,7 +55,19 @@
 
         public IPostViewModel GetPostViewModel(int postId)
         {
-            throw new NotImplementedException();
+            var post = this.forumData.Posts.FirstOrDefault(p => p.Id == postId);
+            IPostViewModel postView = new PostViewModel(post.Title, this.userService.GetUserName(post.AuthorId), post.Content, this.GetPostReplies(postId));
+
+            return postView;
+        }
+
+        private IEnumerable<IReplyViewModel> GetPostReplies(int postId)
+        {
+            IEnumerable<IReplyViewModel> replies = this.forumData.Replies
+                .Where(r => r.PostId == postId)
+                .Select(r => new ReplyViewModel(this.userService.GetUserName(r.AuthorId), r.Content));
+
+            return replies;
         }
     }
 }
