@@ -1,6 +1,7 @@
 ﻿namespace Forum.App.Services
 {
     using Forum.App.Contracts;
+    using Forum.App.Contracts.ViewModels;
     using Forum.Data;
     using System;
     using System.Collections.Generic;
@@ -29,7 +30,9 @@
 
         public IEnumerable<ICategoryInfoViewModel> GetAllCategories()
         {
-            throw new NotImplementedException();
+            var categories = this.forumData.Categories
+                .Select(category => new CategoryInfoViewModel(category.Id, category.Name, category.Posts.Count));
+            return categories;
         }
 
         public string GetCategoryName(int categoryId)
