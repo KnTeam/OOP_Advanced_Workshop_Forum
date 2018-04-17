@@ -4,6 +4,7 @@
     using Forum.Data;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class PostService : IPostService
     {
@@ -33,7 +34,15 @@
 
         public string GetCategoryName(int categoryId)
         {
-            throw new NotImplementedException();
+            string categoryName = this.forumData.Categories
+                .FirstOrDefault(e => e.Id == categoryId).Name;
+
+            if (categoryName == null)
+            {
+                throw new ArgumentException($"Category with category ID: {categoryId} not found!");
+            }
+
+            return categoryName;
         }
 
         public IEnumerable<IPostInfoViewModel> GetCategoryPostsInfo(int categoryId)
