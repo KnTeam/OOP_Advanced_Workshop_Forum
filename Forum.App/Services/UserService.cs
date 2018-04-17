@@ -19,7 +19,7 @@
 
         public User GetUserById(int userId)
         {
-            throw new NotImplementedException();
+            return this.forumData.Users.FirstOrDefault(e => e.Id == userId);
         }
 
         public string GetUserName(int userId)

@@ -3,6 +3,7 @@
     using Forum.App.Contracts;
     using Forum.App.Contracts.ViewModels;
     using Forum.Data;
+    using Forum.DataModels;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -20,7 +21,37 @@
 
         public int AddPost(int userId, string postTitle, string postCategory, string postContent)
         {
-            throw new NotImplementedException();
+            bool emptyCategory = string.IsNullOrWhiteSpace(postCategory);
+            bool emptyTitle = string.IsNullOrWhiteSpace(postTitle);
+            bool emptyContect = string.IsNullOrWhiteSpace(postContent);
+
+            if (emptyCategory || emptyTitle || emptyContect)
+            {
+                throw new ArgumentException("All fields must be filled!!");
+            }
+            Category category = this.EnsureCategory(postCategory);
+
+            int postId = forumData.Posts.Any() ? forumData.Posts.Last().Id + 1 : 1;
+
+            User author = this.userService.GetUserById(userId);
+
+            Post post = new Post(postId, postTitle, postContent, category.Id, userId, new List<int>());
+
+            forumData.Posts.Add(post);
+            author.Posts.Add(post.Id);
+            category.Posts.Add(post.Id);
+            forumData.SaveChanges();
+
+            return post.Id;
+        }
+
+        private Category EnsureCategory(string postCategory)
+        {
+            if (!this.forumData.Categories.Any(e => e.Name == postCategory))
+            {
+                return new Category(postCategory);
+            }
+            return this.forumData.Categories.Where(e => e.Name == postCategory).First();
         }
 
         public void AddReplyToPost(int postId, string replyContents, int userId)
@@ -52,7 +83,7 @@
         {
             IEnumerable<IPostInfoViewModel> posts = this.forumData.Posts
                 .Where(e => e.CategoryId == categoryId)
-                .Select(e => new PostInfoViewModel(e.Id e.Title, e.Replies.Count));
+                .Select(e => new PostInfoViewModel(e.Id ,e.Title, e.Replies.Count));
 
             return posts;
         }
