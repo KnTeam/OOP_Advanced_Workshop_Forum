@@ -20,6 +20,12 @@
 		private static IServiceProvider ConfigureServices()
 		{
 			throw new System.NotImplementedException();
-		}
+
+            //IServiceCollection services = new ServiceCollection();
+
+            //services.AddSingleton<ITextAreaFactory, TextAreaFactory>();
+            //services.AddSingleton<ILabelFactory, LabelFactory>();
+            //MenuFactory not implemented services.AddSingleton<IMenuFactory, MenuFactory>();
+        }
 	}
 }
