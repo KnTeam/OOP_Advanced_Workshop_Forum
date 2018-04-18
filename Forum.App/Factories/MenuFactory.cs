@@ -18,6 +18,7 @@
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
 
+
             Type menuType = assembly.GetTypes()
                 .FirstOrDefault(x => x.Name == menuName);
 
@@ -40,9 +41,9 @@
                 args[i] = this.serviceProvider.GetService(ctorParams[i].ParameterType);
             }
 
-            IMenu command = (IMenu)Activator.CreateInstance(menuType, args);
+            IMenu menu = (IMenu)Activator.CreateInstance(menuType, args);
 
-            return command;
+            return menu;
         }
     }
 }

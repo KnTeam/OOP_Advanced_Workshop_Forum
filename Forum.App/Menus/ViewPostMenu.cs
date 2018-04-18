@@ -27,7 +27,8 @@
             this.commandFactory = commandFactory;
             this.viewEngine = forumViewEngine;
 
-            this.Open();
+            // TODO: uncomment if its still not working
+            // this.Open();
         }
 
         public override void Open()

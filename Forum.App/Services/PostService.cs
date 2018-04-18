@@ -72,8 +72,8 @@
 
         public string GetCategoryName(int categoryId)
         {
-            string categoryName = this.forumData.Categories
-                .FirstOrDefault(e => e.Id == categoryId).Name;
+            var categoryName = this.forumData.Categories
+                .Find(c => c.Id == categoryId)?.Name;
 
             if (categoryName == null)
             {
@@ -87,7 +87,7 @@
         {
             IEnumerable<IPostInfoViewModel> posts = this.forumData.Posts
                 .Where(e => e.CategoryId == categoryId)
-                .Select(e => new PostInfoViewModel(e.Id ,e.Title, e.Replies.Count));
+                .Select(e => new PostInfoViewModel(e.Id, e.Title, e.Replies.Count));
 
             return posts;
         }
