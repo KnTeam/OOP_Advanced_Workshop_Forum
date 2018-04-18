@@ -20,6 +20,8 @@
             this.labelFactory = labelFactory;
             this.commandFactory = commandFactory;
             this.forumReader = forumReader;
+
+            this.Open();
         }
 
         private string UsernameInput => this.Buttons[0].Text.TrimStart();

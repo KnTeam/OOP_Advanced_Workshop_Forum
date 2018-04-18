@@ -26,6 +26,8 @@
             this.session = session;
             this.commandFactory = commandFactory;
             this.viewEngine = forumViewEngine;
+
+            this.Open();
         }
 
         public override void Open()

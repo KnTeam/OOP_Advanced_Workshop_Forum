@@ -19,7 +19,7 @@
             Assembly assembly = Assembly.GetExecutingAssembly();
 
             Type menuType = assembly.GetTypes()
-                .FirstOrDefault(x => x.Name == menuName + "Menu");
+                .FirstOrDefault(x => x.Name == menuName);
 
             if (menuType == null)
             {

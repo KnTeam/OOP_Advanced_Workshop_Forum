@@ -19,6 +19,8 @@
             this.labelFactory = labelFactory;
             this.commandFactory = commandFactory;
             this.forumReader = forumReader;
+
+            this.Open();
         }
 
         private string ErrorMessage { get; set; }

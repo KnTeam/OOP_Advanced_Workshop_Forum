@@ -18,6 +18,10 @@
             this.textAreaFactory = textAreaFactory;
             this.reader = reader;
             this.commandFactory = commandFactory;
+
+            this.InitializeTextArea();
+
+            this.Open();
         }
 
 		private string TitleInput => this.Buttons[0].Text.TrimStart();
