@@ -4,85 +4,134 @@
 
 	using Models;
 	using Contracts;
+    using System;
 
-	public class AddReplyMenu : Menu, ITextAreaMenu, IIdHoldingMenu
+    public class AddReplyMenu : Menu, ITextAreaMenu, IIdHoldingMenu
     {
-		private const int authorOffset = 8;
-		private const int leftOffset = 18;
-		private const int topOffset = 7;
-		private const int buttonOffset = 14;
+        private const int authorOffset = 8;
+        private const int leftOffset = 18;
+        private const int topOffset = 7;
+        private const int buttonOffset = 14;
 
-		private ILabelFactory labelFactory;
-		private ITextAreaFactory textAreaFactory;
-		private IForumReader reader;
+        private ILabelFactory labelFactory;
+        private ITextAreaFactory textAreaFactory;
+        private IForumReader reader;
+        private ICommandFactory commandFactory;
+        private IPostService postService;
 
-		private bool error;
-		private IPostViewModel post;
+        public AddReplyMenu(ILabelFactory labelFactory, ITextAreaFactory textAreaFactory,
+            IForumReader reader, ICommandFactory commandFactory, IPostService postService)
+        {
+            this.labelFactory = labelFactory;
+            this.textAreaFactory = textAreaFactory;
+            this.reader = reader;
+            this.commandFactory = commandFactory;
+            this.postService = postService;
 
-		//TODO: Inject Dependencies
+        }
 
-		public ITextInputArea TextArea { get; private set; }
+        private int postId;
+        private bool error;
+        private IPostViewModel post;
+        private string errorMessage;
 
-		protected override void InitializeStaticLabels(Position consoleCenter)
-		{
-			Position errorPosition = 
-				new Position(consoleCenter.Left - this.post.Title.Length / 2, consoleCenter.Top - 12);
-			Position titlePosition =
-				new Position(consoleCenter.Left - this.post.Title.Length / 2, consoleCenter.Top - 10);
-			Position authorPosition =
-				new Position(consoleCenter.Left - this.post.Author.Length, consoleCenter.Top - 9);
+        public ITextInputArea TextArea { get; private set; }
 
-			var labels = new List<ILabel>()
-			{
-				this.labelFactory.CreateLabel("Cannot add an empty reply!", errorPosition, !error),
-				this.labelFactory.CreateLabel(this.post.Title, titlePosition),
-				this.labelFactory.CreateLabel($"Author: {this.post.Author}", authorPosition),
-			};
+        protected override void InitializeStaticLabels(Position consoleCenter)
+        {
+            Position errorPosition =
+                new Position(consoleCenter.Left - this.post.Title.Length / 2, consoleCenter.Top - 12);
+            Position titlePosition =
+                new Position(consoleCenter.Left - this.post.Title.Length / 2, consoleCenter.Top - 10);
+            Position authorPosition =
+                new Position(consoleCenter.Left - this.post.Author.Length, consoleCenter.Top - 9);
 
-			int leftPosition = consoleCenter.Left - leftOffset;
+            var labels = new List<ILabel>()
+            {
+                this.labelFactory.CreateLabel("Cannot add an empty reply!", errorPosition, !error),
+                this.labelFactory.CreateLabel(this.post.Title, titlePosition),
+                this.labelFactory.CreateLabel($"Author: {this.post.Author}", authorPosition),
+            };
 
-			int lineCount = this.post.Content.Length;
+            int leftPosition = consoleCenter.Left - leftOffset;
 
-			// Add post contents
-			for (int i = 0; i < lineCount; i++)
-			{
-				Position position = new Position(leftPosition, consoleCenter.Top - (topOffset - i));
-				ILabel label = this.labelFactory.CreateLabel(this.post.Content[i], position);
-				labels.Add(label);
-			}
+            int lineCount = this.post.Content.Length;
 
-			this.Labels = labels.ToArray();
-		}
+            // Add post contents
+            for (int i = 0; i < lineCount; i++)
+            {
+                Position position = new Position(leftPosition, consoleCenter.Top - (topOffset - i));
+                ILabel label = this.labelFactory.CreateLabel(this.post.Content[i], position);
+                labels.Add(label);
+            }
 
-		protected override void InitializeButtons(Position consoleCenter)
-		{
-			int left = consoleCenter.Left + buttonOffset;
-			int top = consoleCenter.Top - (topOffset - this.post.Content.Length);
+            this.Labels = labels.ToArray();
+        }
 
-			this.Buttons = new IButton[3];
+        protected override void InitializeButtons(Position consoleCenter)
+        {
+            int left = consoleCenter.Left + buttonOffset;
+            int top = consoleCenter.Top - (topOffset - this.post.Content.Length);
 
-			this.Buttons[0] = this.labelFactory.CreateButton("Write", new Position(left, top + 1));
-			this.Buttons[1] = this.labelFactory.CreateButton("Submit", new Position(left - 1, top + 11));
-			this.Buttons[2] = this.labelFactory.CreateButton("Back", new Position(left + 1, top + 12));
-		}
+            this.Buttons = new IButton[3];
 
-		private void InitializeTextArea()
-		{
-			Position consoleCenter = Position.ConsoleCenter();
+            this.Buttons[0] = this.labelFactory.CreateButton("Write", new Position(left, top + 1));
+            this.Buttons[1] = this.labelFactory.CreateButton("Submit Reply", new Position(left - 1, top + 11));
+            this.Buttons[2] = this.labelFactory.CreateButton("Back", new Position(left + 1, top + 12));
+        }
 
-			int top = consoleCenter.Top - (topOffset + this.post.Content.Length) + 5;
+        private void InitializeTextArea()
+        {
+            Position consoleCenter = Position.ConsoleCenter();
 
-			this.TextArea = this.textAreaFactory.CreateTextArea(this.reader, consoleCenter.Left - 18, top, false);
-		}
+            int top = consoleCenter.Top - (topOffset + this.post.Content.Length) + 5;
 
-		public void SetId(int id)
-		{
-			throw new System.NotImplementedException();
-		}
+            this.TextArea = this.textAreaFactory.CreateTextArea(this.reader, consoleCenter.Left - 18, top, false);
+        }
 
-		public override IMenu ExecuteCommand()
-		{
-			throw new System.NotImplementedException();
-		}
-	}
+        public void SetId(int id)
+        {
+            this.postId = id;
+            this.LoadPost();
+        }
+
+        private void LoadPost()
+        {
+            this.post = this.postService.GetPostViewModel(this.postId);
+
+
+            this.InitializeTextArea();
+            this.Open();
+        }
+
+        public override IMenu ExecuteCommand()
+        {
+            if (this.CurrentOption.IsField)
+            {
+                string fieldInput = " " + this.reader.ReadLine(this.CurrentOption.Position.Left + 1,
+                                        this.CurrentOption.Position.Top);
+
+                this.Buttons[this.currentIndex] = this.labelFactory.CreateButton(
+                    fieldInput, this.CurrentOption.Position, this.CurrentOption.IsHidden, this.CurrentOption.IsField);
+
+                return this;
+            }
+
+            try
+            {
+                string commandName = string.Join("", this.CurrentOption.Text.Split());
+                ICommand command = this.commandFactory.CreateCommand(commandName);
+                IMenu view = command.Execute(this.TextArea.Text, this.postId.ToString());
+
+                return view;
+            }
+            catch (Exception e)
+            {
+                this.error = true;
+                this.errorMessage = e.Message;
+                this.InitializeStaticLabels(Position.ConsoleCenter());
+                return this;
+            }
+        }
+    }
 }

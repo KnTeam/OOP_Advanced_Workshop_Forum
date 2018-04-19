@@ -121,6 +121,7 @@
         public override IMenu ExecuteCommand()
         {
             string commandName = string.Join("", this.CurrentOption.Text.Split());
+            
             ICommand command = commandFactory.CreateCommand(commandName);
             IMenu menu = command.Execute(this.postId.ToString());
 

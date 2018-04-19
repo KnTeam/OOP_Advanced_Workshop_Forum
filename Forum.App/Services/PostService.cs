@@ -60,7 +60,16 @@
 
         public void AddReplyToPost(int postId, string replyContents, int userId)
         {
-            throw new NotImplementedException();
+            Post post = this.forumData.Posts.FirstOrDefault(e => e.Id == postId);
+
+            if (post != null)
+            {
+                int replyId = forumData.Replies.Any() ? forumData.Posts.Last().Id + 1 : 1;
+                Reply reply = new Reply(replyId, replyContents, userId, postId);
+
+                this.forumData.Replies.Add(reply);
+                post.Replies.Add(replyId);
+            }
         }
 
         public IEnumerable<ICategoryInfoViewModel> GetAllCategories()
