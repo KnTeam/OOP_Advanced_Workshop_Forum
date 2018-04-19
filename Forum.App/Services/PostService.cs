@@ -69,6 +69,7 @@
 
                 this.forumData.Replies.Add(reply);
                 post.Replies.Add(replyId);
+                this.forumData.SaveChanges();
             }
         }
 
