@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Forum.App.Commands
+﻿namespace Forum.App.Commands
 {
     using Contracts;
     public class ViewPostMenuCommand : ICommand
@@ -22,7 +18,7 @@ namespace Forum.App.Commands
             string menuName = commandName.Substring(0, commandName.Length - "Command".Length);
 
 
-            IMenu currentMenu = this.menuFactory.CreateMenu(commandName);
+            IMenu currentMenu = this.menuFactory.CreateMenu(menuName);
 
             if (currentMenu is IIdHoldingMenu idHoldingMenu)
             {

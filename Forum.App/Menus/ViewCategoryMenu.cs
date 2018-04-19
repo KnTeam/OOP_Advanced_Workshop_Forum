@@ -26,7 +26,8 @@
             this.postService = postService;
             this.commandFactory = commandFactory;
 
-            this.Open();
+            // TODO: Uncomment this
+           // this.Open();
         }
 
 		private int LastPage => this.posts.Length / 11;
@@ -106,7 +107,6 @@
             this.LoadPosts();
 
             base.Open();
-
         }
 
         private void LoadPosts()
@@ -129,7 +129,7 @@
             {
                 command = this.commandFactory.CreateCommand(string.Join("", this.CurrentOption.Text.Split()));
             }
-            return command.Execute();
+            return command.Execute(postId);
 		}
 
 		public void ChangePage(bool forward = true)
