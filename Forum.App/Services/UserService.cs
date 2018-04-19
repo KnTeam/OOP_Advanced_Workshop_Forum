@@ -36,6 +36,11 @@
 
             User userToLog = forumData.Users.FirstOrDefault(x => x.Username == username && x.Password == password);
 
+            if(userToLog == null)
+            {
+                return false;
+            }
+
             session.Reset();
             session.LogIn(userToLog);
 
