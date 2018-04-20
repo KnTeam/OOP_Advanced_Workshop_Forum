@@ -1,13 +1,13 @@
 ﻿namespace Forum.App.Commands
 {
-    using Forum.App.Contracts;
     using System;
+    using Forum.App.Contracts;
 
     public class SubmitReplyCommand : ICommand
     {
         private ISession session;
         private IPostService postService;
-        private ICommandFactory commandFactory; //toCheck
+        private ICommandFactory commandFactory; // toCheck
 
         public SubmitReplyCommand(ISession session, IPostService postService, ICommandFactory commandFactory)
         {
@@ -30,7 +30,7 @@
 
             this.postService.AddReplyToPost(postId, replyContent, userId);
 
-            ICommand viewReplyCommand = this.commandFactory.CreateCommand("ViewPostMenu"); 
+            ICommand viewReplyCommand = this.commandFactory.CreateCommand("ViewPostMenu");
 
             return this.session.Back();
         }

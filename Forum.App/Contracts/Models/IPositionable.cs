@@ -1,6 +1,6 @@
 ﻿namespace Forum.App.Contracts
 {
-	using Models;
+    using Models;
 
     public interface IPositionable
     {

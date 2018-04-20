@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Forum.App.Commands
+﻿namespace Forum.App.Commands
 {
     using Contracts;
+
     public class PostCommand : ICommand
     {
         private ISession session;

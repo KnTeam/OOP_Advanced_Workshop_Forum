@@ -1,8 +1,8 @@
 ﻿namespace Forum.App
 {
-	using System;
+    using System;
 
-	using Contracts;
+    using Contracts;
 
     public class Engine
     {
@@ -10,42 +10,42 @@
 
         public Engine(IMainController menuController)
         {
-			this.menu = menuController;
+            this.menu = menuController;
         }
 
         internal void Run()
         {
             while (true)
             {
-                menu.MarkOption();
+                this.menu.MarkOption();
 
                 var keyInfo = Console.ReadKey(true);
                 var key = keyInfo.Key;
 
-				menu.UnmarkOption();
+                this.menu.UnmarkOption();
 
                 switch (key)
                 {
                     case ConsoleKey.Backspace:
                     case ConsoleKey.Escape:
-                        menu.Back();
+                        this.menu.Back();
                         break;
                     case ConsoleKey.Home:
                         break;
                     case ConsoleKey.LeftArrow:
                     case ConsoleKey.UpArrow:
-                        menu.PreviousOption();
+                        this.menu.PreviousOption();
                         break;
                     case ConsoleKey.Tab:
                     case ConsoleKey.RightArrow:
                     case ConsoleKey.DownArrow:
-                        menu.NextOption();
+                        this.menu.NextOption();
                         break;
                     case ConsoleKey.Enter:
-                        menu.Execute();
+                        this.menu.Execute();
                         break;
                 }
             }
         }
-	}
+    }
 }

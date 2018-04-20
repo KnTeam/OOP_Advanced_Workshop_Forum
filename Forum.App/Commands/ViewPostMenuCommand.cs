@@ -1,11 +1,12 @@
 ﻿namespace Forum.App.Commands
 {
     using Contracts;
+
     public class ViewPostMenuCommand : ICommand
     {
-
         private ISession session;
         private IMenuFactory menuFactory;
+
         public ViewPostMenuCommand(ISession session, IMenuFactory menuFactory)
         {
             this.session = session;
@@ -16,7 +17,6 @@
         {
             string commandName = this.GetType().Name;
             string menuName = commandName.Substring(0, commandName.Length - "Command".Length);
-
 
             IMenu currentMenu = this.menuFactory.CreateMenu(menuName);
 

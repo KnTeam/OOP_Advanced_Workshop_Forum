@@ -2,10 +2,10 @@
 {
     public interface ITextInputArea
     {
-		string Text { get; }
+        string Text { get; }
 
-		void Write();
+        void Write();
 
-		void Render();
+        void Render();
     }
 }

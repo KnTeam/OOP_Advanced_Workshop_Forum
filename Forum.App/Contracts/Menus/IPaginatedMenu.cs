@@ -2,6 +2,6 @@
 {
     public interface IPaginatedMenu
     {
-		void ChangePage(bool forward = true);
+        void ChangePage(bool forward = true);
     }
 }

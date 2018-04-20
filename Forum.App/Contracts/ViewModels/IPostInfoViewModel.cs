@@ -2,10 +2,10 @@
 {
     public interface IPostInfoViewModel
     {
-		int Id { get; }
+        int Id { get; }
 
-		string Title { get; }
+        string Title { get; }
 
-		int ReplyCount { get; }
+        int ReplyCount { get; }
     }
 }

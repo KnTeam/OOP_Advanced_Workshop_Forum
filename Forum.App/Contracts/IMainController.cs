@@ -2,16 +2,16 @@
 {
     public interface IMainController
     {
-		void MarkOption();
+        void MarkOption();
 
-		void UnmarkOption();
+        void UnmarkOption();
 
-		void NextOption();
+        void NextOption();
 
-		void PreviousOption();
+        void PreviousOption();
 
-		void Back();
+        void Back();
 
-		void Execute();
+        void Execute();
     }
 }

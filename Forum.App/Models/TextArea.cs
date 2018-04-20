@@ -3,43 +3,44 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-	using System.Threading;
-	using Contracts;
+    using System.Threading;
+    using Contracts;
 
     public class TextInputArea : ITextInputArea
     {
-		private const int lineLength = 37;
+        private const int LineLength = 37;
 
-		private const int postMaxLength = 660;
-		private const int postAreaHeight = 18;
+        private const int PostMaxLength = 660;
+        private const int PostAreaHeight = 18;
 
-		private const int replyMaxLength = 220;
-		private const int replyAreaHeight = 6;
+        private const int ReplyMaxLength = 220;
+        private const int ReplyAreaHeight = 6;
 
-		private int x;
+        private static char[] forbiddenCharacters = { ';' };
+
+        private int x;
         private int y;
         private int height;
-		private int maxLength;
+        private int maxLength;
 
         private int textCursorPosition;
         private Position displayCursor;
-		private IForumReader reader;
+        private IForumReader reader;
 
         private IEnumerable<string> lines = new List<string>();
         private string text = string.Empty;
-        private static char[] forbiddenCharacters = { ';' };
 
-		public TextInputArea(IForumReader reader, int x, int y, bool isPost = true)
-		{
-			this.reader = reader;
+        public TextInputArea(IForumReader reader, int x, int y, bool isPost = true)
+        {
+            this.reader = reader;
 
-			this.x = x;
-			this.y = y;
-			this.displayCursor = new Position(x, y);
+            this.x = x;
+            this.y = y;
+            this.displayCursor = new Position(x, y);
 
-			this.height = isPost ? postAreaHeight : replyAreaHeight;
-			this.maxLength = isPost ? postMaxLength : replyMaxLength;
-		}
+            this.height = isPost ? PostAreaHeight : ReplyAreaHeight;
+            this.maxLength = isPost ? PostMaxLength : ReplyMaxLength;
+        }
 
         public int Left { get => this.x; }
 
@@ -67,7 +68,7 @@
 
         public void Write()
         {
-			this.Render();
+            this.Render();
             this.reader.ShowCursor();
 
             while (true)
@@ -81,7 +82,7 @@
                 }
                 else if (this.Text.Length == this.maxLength || forbiddenCharacters.Contains(keyInfo.KeyChar))
                 {
-					new Thread(() => Console.Beep(415, 260)).Start();
+                    new Thread(() => Console.Beep(415, 260)).Start();
                     continue;
                 }
                 else if (key == ConsoleKey.Enter || key == ConsoleKey.Escape)
@@ -97,79 +98,84 @@
             this.reader.HideCursor();
         }
 
-		public void Render()
-		{
-			int top = this.Top;
+        public void Render()
+        {
+            int top = this.Top;
 
-			Console.SetCursorPosition(this.Left, top);
+            Console.SetCursorPosition(this.Left, top);
 
-			foreach (var item in this.Lines)
-			{
-				Console.SetCursorPosition(this.Left, top);
-				Console.Write(new string(' ', 37));
-				Console.SetCursorPosition(this.Left, top);
-				foreach (var ch in item)
-				{
-					Console.Write(ch);
-				}
-				top++;
-			}
-		}
+            foreach (var item in this.Lines)
+            {
+                Console.SetCursorPosition(this.Left, top);
+                Console.Write(new string(' ', 37));
+                Console.SetCursorPosition(this.Left, top);
+                foreach (var ch in item)
+                {
+                    Console.Write(ch);
+                }
 
-		private bool AddCharacter(char character)
-		{
-			if (this.Text.Length < this.maxLength)
-			{
-				string stringBefore = this.Text.Substring(0, textCursorPosition);
-				string stringAfter = this.Text.Substring(textCursorPosition, this.Text.Length - textCursorPosition);
+                top++;
+            }
+        }
 
-				this.Text = stringBefore + character + stringAfter;
-
-				this.textCursorPosition++;
-				this.Render();
-				return true;
-			}
-			return false;
-		}
-
-		public void Delete()
+        public void Delete()
         {
             if (this.textCursorPosition > 0)
             {
-                string stringBefore = this.Text.Substring(0, textCursorPosition);
-                string stringAfter = this.Text.Substring(textCursorPosition, this.Text.Length - textCursorPosition);
+                string stringBefore = this.Text.Substring(0, this.textCursorPosition);
+                string stringAfter = this.Text.Substring(this.textCursorPosition, this.Text.Length - this.textCursorPosition);
 
                 stringBefore = stringBefore.Substring(0, stringBefore.Length - 1);
                 this.Text = stringBefore + stringAfter;
                 this.textCursorPosition--;
-				this.Render();
+                this.Render();
             }
+
             this.lines = this.Split(this.Text);
         }
 
-		private IEnumerable<string> Split(string text)
-		{
-			List<String> splitText = new List<String>();
+        private bool AddCharacter(char character)
+        {
+            if (this.Text.Length < this.maxLength)
+            {
+                string stringBefore = this.Text.Substring(0, this.textCursorPosition);
+                string stringAfter = this.Text.Substring(this.textCursorPosition, this.Text.Length - this.textCursorPosition);
 
-			var lastSplit = 0;
-			for (var i = 0; i < text.Length + 1; i++)
-			{
-				if (text.Length > i && text[i] == '\n')
-				{
-					splitText.Add(text.Substring(lastSplit, i - lastSplit + 1));
-					lastSplit = i + 1;
-				}
-				else if (i - lastSplit == lineLength)
-				{
-					splitText.Add(text.Substring(lastSplit, i - lastSplit));
-					lastSplit = i;
-				}
+                this.Text = stringBefore + character + stringAfter;
 
-				if (i == text.Length)
-					splitText.Add(text.Substring(lastSplit, text.Length - lastSplit));
-			}
+                this.textCursorPosition++;
+                this.Render();
+                return true;
+            }
 
-			return splitText.Select(x => x.Replace('\r', ' '));
-		}
-	}
+            return false;
+        }
+
+        private IEnumerable<string> Split(string text)
+        {
+            List<string> splitText = new List<string>();
+
+            var lastSplit = 0;
+            for (var i = 0; i < text.Length + 1; i++)
+            {
+                if (text.Length > i && text[i] == '\n')
+                {
+                    splitText.Add(text.Substring(lastSplit, i - lastSplit + 1));
+                    lastSplit = i + 1;
+                }
+                else if (i - lastSplit == LineLength)
+                {
+                    splitText.Add(text.Substring(lastSplit, i - lastSplit));
+                    lastSplit = i;
+                }
+
+                if (i == text.Length)
+                {
+                    splitText.Add(text.Substring(lastSplit, text.Length - lastSplit));
+                }
+            }
+
+            return splitText.Select(x => x.Replace('\r', ' '));
+        }
+    }
 }

@@ -1,8 +1,8 @@
 ﻿namespace Forum.App.Models
 {
-	using System;
+    using System;
 
-	public struct Position
+    public struct Position
     {
         private int left;
         private int top;
@@ -15,14 +15,14 @@
 
         public int Top
         {
-            get { return top; }
-            set { top = value; }
+            get { return this.top; }
+            set { this.top = value; }
         }
 
         public int Left
         {
-            get { return left; }
-            set { left = value; }
+            get { return this.left; }
+            set { this.left = value; }
         }
 
         public static Position ConsoleCenter()

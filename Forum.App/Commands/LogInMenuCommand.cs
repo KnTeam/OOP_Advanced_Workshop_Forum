@@ -1,10 +1,7 @@
-﻿using Forum.App.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Forum.App.Commands
+﻿namespace Forum.App.Commands
 {
+    using Forum.App.Contracts;
+
     public class LogInMenuCommand : ICommand
     {
         private IMenuFactory menuFactory;

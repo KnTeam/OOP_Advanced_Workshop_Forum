@@ -2,18 +2,17 @@
 {
     using System;
 
-    using Microsoft.Extensions.DependencyInjection;
-
     using Contracts;
     using Factories;
     using Forum.App.Models;
-    using Forum.Data;
     using Forum.App.Services;
+    using Forum.Data;
+    using Microsoft.Extensions.DependencyInjection;
 
     public class StartUp
-	{
-		public static void Main(string[] args)
-		{
+    {
+        public static void Main(string[] args)
+        {
             IServiceProvider serviceProvider = ConfigureServices();
             IMainController menu = serviceProvider.GetService<IMainController>();
 
@@ -21,8 +20,8 @@
             engine.Run();
         }
 
-		private static IServiceProvider ConfigureServices()
-		{
+        private static IServiceProvider ConfigureServices()
+        {
             IServiceCollection services = new ServiceCollection();
 
             services.AddSingleton<ITextAreaFactory, TextAreaFactory>();
@@ -44,5 +43,5 @@
 
             return serviceProvider;
         }
-	}
+    }
 }

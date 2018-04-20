@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Forum.App.Commands
+﻿namespace Forum.App.Commands
 {
     using Contracts;
+
     public class WriteCommand : ICommand
     {
         private ISession session;
@@ -13,6 +10,7 @@ namespace Forum.App.Commands
         {
             this.session = session;
         }
+
         public IMenu Execute(params string[] args)
         {
             ITextAreaMenu currentMenu = (ITextAreaMenu)this.session.CurrentMenu;

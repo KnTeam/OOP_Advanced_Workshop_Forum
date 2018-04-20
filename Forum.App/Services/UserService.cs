@@ -1,10 +1,10 @@
 ﻿namespace Forum.App.Services
 {
-    using Forum.App.Contracts;
     using System;
-    using Forum.DataModels;
-    using Forum.Data;
     using System.Linq;
+    using Forum.App.Contracts;
+    using Forum.Data;
+    using Forum.DataModels;
 
     public class UserService : IUserService
     {
@@ -34,15 +34,15 @@
                 return false;
             }
 
-            User userToLog = forumData.Users.FirstOrDefault(x => x.Username == username && x.Password == password);
+            User userToLog = this.forumData.Users.FirstOrDefault(x => x.Username == username && x.Password == password);
 
-            if(userToLog == null)
+            if (userToLog == null)
             {
                 return false;
             }
 
-            session.Reset();
-            session.LogIn(userToLog);
+            this.session.Reset();
+            this.session.LogIn(userToLog);
 
             return true;
         }
@@ -57,19 +57,19 @@
                 throw new ArgumentException("Username and Password must be longer than 3 symbols!");
             }
 
-            bool userAlreadyExists = forumData.Users.Any(x => x.Username == username);
+            bool userAlreadyExists = this.forumData.Users.Any(x => x.Username == username);
 
             if (userAlreadyExists)
             {
                 throw new InvalidOperationException("Username taken!");
             }
 
-            int newUserId = forumData.Users.LastOrDefault()?.Id + 1 ?? 1;
+            int newUserId = this.forumData.Users.LastOrDefault()?.Id + 1 ?? 1;
 
             User newUser = new User(newUserId, username, password);
 
-            forumData.Users.Add(newUser);
-            forumData.SaveChanges();
+            this.forumData.Users.Add(newUser);
+            this.forumData.SaveChanges();
 
             this.TryLogInUser(username, password);
 

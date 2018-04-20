@@ -1,7 +1,7 @@
-﻿using Forum.App.Contracts;
-
-namespace Forum.App.Commands
+﻿namespace Forum.App.Commands
 {
+    using Forum.App.Contracts;
+
     public class NextPageCommand : ICommand
     {
         private ISession session;

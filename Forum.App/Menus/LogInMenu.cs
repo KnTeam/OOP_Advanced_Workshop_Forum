@@ -1,14 +1,15 @@
 ﻿namespace Forum.App.Menus
 {
-	using Models;
-    using Contracts;
     using System;
+
+    using Contracts;
+    using Models;
 
     public class LogInMenu : Menu
     {
-		private const string errorMessage = "Invalid username or password!";
+        private const string ErrorMessageText = "Invalid username or password!";
 
-		private bool error;
+        private bool error;
 
         private ILabelFactory labelFactory;
         private ICommandFactory commandFactory;
@@ -27,15 +28,44 @@
 
         private string UsernameInput => this.Buttons[0].Text.TrimStart();
 
-		private string PasswordInput => this.Buttons[1].Text.TrimStart();
+        private string PasswordInput => this.Buttons[1].Text.TrimStart();
 
-		protected override void InitializeStaticLabels(Position consoleCenter)
+        public override IMenu ExecuteCommand()
         {
-            string[] labelContents = new string[] { errorMessage, "Name:", "Password:" };
+            if (CurrentOption.IsField)
+            {
+                string fieldInput = " " + this.forumReader.ReadLine(this.CurrentOption.Position.Left + 1, this.CurrentOption.Position.Top);
+
+                this.Buttons[this.currentIndex] = this.labelFactory.CreateButton(fieldInput, this.CurrentOption.Position, this.CurrentOption.IsHidden, this.CurrentOption.IsField);
+
+                return this;
+            }
+
+            try
+            {
+                string commandName = string.Join(string.Empty, this.CurrentOption.Text.Split());
+                ICommand command = this.commandFactory.CreateCommand(commandName);
+
+                IMenu view = command.Execute(this.UsernameInput, this.PasswordInput);
+
+                return view;
+            }
+            catch (Exception e)
+            {
+                this.error = true;
+                this.ErrorMessage = e.Message;
+                this.Open();
+                return this;
+            }
+        }
+
+        protected override void InitializeStaticLabels(Position consoleCenter)
+        {
+            string[] labelContents = new string[] { ErrorMessageText, "Name:", "Password:" };
 
             Position[] labelPositions = new Position[]
             {
-				new Position(consoleCenter.Left - errorMessage.Length / 2, consoleCenter.Top - 13),   // Error: 
+                new Position(consoleCenter.Left - (ErrorMessageText.Length / 2), consoleCenter.Top - 13),   // Error: 
                 new Position(consoleCenter.Left - 16, consoleCenter.Top - 10),   // Name:
                 new Position(consoleCenter.Left - 16, consoleCenter.Top - 8),    // Password:
             };
@@ -50,7 +80,7 @@
             }
         }
 
-		protected override void InitializeButtons(Position consoleCenter)
+        protected override void InitializeButtons(Position consoleCenter)
         {
             string[] buttonContents = new string[]
             {
@@ -69,40 +99,10 @@
 
             for (int i = 0; i < this.Buttons.Length; i++)
             {
-				string buttonContent = buttonContents[i];
-				bool isField = string.IsNullOrWhiteSpace(buttonContent);
-				this.Buttons[i] = this.labelFactory.CreateButton(buttonContent, buttonPositions[i], false, isField);
+                string buttonContent = buttonContents[i];
+                bool isField = string.IsNullOrWhiteSpace(buttonContent);
+                this.Buttons[i] = this.labelFactory.CreateButton(buttonContent, buttonPositions[i], false, isField);
             }
         }
-
-		public override IMenu ExecuteCommand()
-		{
-            if (CurrentOption.IsField)
-            {
-                string fieldInput = " " + this.forumReader.ReadLine(this.CurrentOption.Position.Left + 1, this.CurrentOption.Position.Top);
-
-                this.Buttons[this.currentIndex] = this.labelFactory.CreateButton(fieldInput, this.CurrentOption.Position, this.CurrentOption.IsHidden, this.CurrentOption.IsField);
-
-                return this;
-            }
-
-            try
-            {
-                string commandName = string.Join("", this.CurrentOption.Text.Split());
-                ICommand command = this.commandFactory.CreateCommand(commandName);
-
-                IMenu view = command.Execute(this.UsernameInput, this.PasswordInput);
-
-                return view;
-
-            }
-            catch (Exception e)
-            {
-                this.error = true;
-                this.ErrorMessage = e.Message;
-                this.Open();
-                return this;
-            }
-        }
-	}
+    }
 }

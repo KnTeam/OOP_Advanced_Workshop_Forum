@@ -6,11 +6,11 @@
 
     public class ContentViewModel
     {
-        private const int lineLength = 37;
+        private const int LineLength = 37;
 
         public ContentViewModel(string content)
         {
-            Content = GetLines(content);
+            this.Content = this.GetLines(content);
         }
 
         public string[] Content { get; }
@@ -21,11 +21,11 @@
 
             ICollection<string> lines = new List<string>();
 
-            for (int i = 0; i < contentChars.Length; i += lineLength)
+            for (int i = 0; i < contentChars.Length; i += LineLength)
             {
-                char[] row = contentChars.Skip(i).Take(lineLength).ToArray();
+                char[] row = contentChars.Skip(i).Take(LineLength).ToArray();
 
-                string rowString = string.Join("", row);
+                string rowString = string.Join(string.Empty, row);
                 lines.Add(rowString);
             }
 

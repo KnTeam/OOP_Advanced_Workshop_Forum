@@ -1,7 +1,7 @@
 ﻿namespace Forum.App.Commands
 {
-    using Forum.App.Contracts;
     using System;
+    using Forum.App.Contracts;
 
     public class SignUpCommand : ICommand
     {

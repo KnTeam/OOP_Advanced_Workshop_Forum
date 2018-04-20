@@ -1,32 +1,31 @@
 ﻿namespace Forum.App.Models
 {
-	using Contracts;
-	using DataModels;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Contracts;
+    using DataModels;
 
     public class Session : ISession
-	{
+    {
+        private User user;
+
+        private Stack<IMenu> history;
+
         public Session()
         {
             this.history = new Stack<IMenu>();
         }
 
-        private User user;
+        public string Username => this.user?.Username;
 
-        private Stack<IMenu> history;
+        public int UserId => this.user?.Id ?? 0;
 
-		public string Username => this.user?.Username;
+        public bool IsLoggedIn => this.user != null;
 
-		public int UserId => this.user?.Id ?? 0;
+        public IMenu CurrentMenu => this.history.Peek();
 
-		public bool IsLoggedIn => this.user != null;
-
-		public IMenu CurrentMenu => this.history.Peek();
-
-		public IMenu Back()
-		{
+        public IMenu Back()
+        {
             if (this.history.Count > 1)
             {
                 this.history.Pop();
@@ -36,32 +35,33 @@
             previousMenu.Open();
 
             return previousMenu;
-		}
+        }
 
-		public void LogIn(User user)
-		{
+        public void LogIn(User user)
+        {
             this.user = user;
-		}
+        }
 
-		public void LogOut()
-		{
+        public void LogOut()
+        {
             this.user = null;
-		}
+        }
 
-		public bool PushView(IMenu view)
-		{
+        public bool PushView(IMenu view)
+        {
             if (!this.history.Any() || this.history.Peek() != view)
             {
                 this.history.Push(view);
                 return true;
             }
-            return false;
-		}
 
-		public void Reset()
-		{
+            return false;
+        }
+
+        public void Reset()
+        {
             this.history = new Stack<IMenu>();
             this.user = null;
-		}
-	}
+        }
+    }
 }

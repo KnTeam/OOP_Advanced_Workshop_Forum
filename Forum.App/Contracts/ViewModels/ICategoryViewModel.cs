@@ -2,10 +2,10 @@
 {
     public interface ICategoryInfoViewModel
     {
-		int Id { get; }
+        int Id { get; }
 
-		string Name { get; }
+        string Name { get; }
 
-		int PostCount { get; }
-	}
+        int PostCount { get; }
+    }
 }

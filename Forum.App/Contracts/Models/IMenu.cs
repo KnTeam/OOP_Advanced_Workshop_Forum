@@ -2,18 +2,18 @@
 {
     public interface IMenu
     {
-		IButton CurrentOption { get; }
+        IButton CurrentOption { get; }
 
         ILabel[] Labels { get; }
 
         IButton[] Buttons { get; }
 
-		void NextOption();
+        void NextOption();
 
-		void PreviousOption();
+        void PreviousOption();
 
-		IMenu ExecuteCommand();
+        IMenu ExecuteCommand();
 
-		void Open();
-	}
+        void Open();
+    }
 }

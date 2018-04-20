@@ -1,16 +1,15 @@
 ﻿namespace Forum.App.Menus
 {
-    using System.Linq;
     using System.Collections.Generic;
+    using System.Linq;
 
     using Contracts;
     using Models;
-    using System;
 
     public class CategoriesMenu : Menu, IPaginatedMenu
     {
-        private const int pageSize = 10;
-        private const int categoryNameLength = 36;
+        private const int PageSize = 10;
+        private const int CategoryNameLength = 36;
 
         private ILabelFactory labelFactory;
         private IPostService postService;
@@ -32,6 +31,36 @@
         private bool IsFirstPage => this.currentPage == 0;
 
         private bool IsLastPage => this.currentPage == this.LastPage;
+
+        public override void Open()
+        {
+            this.LoadCategories();
+
+            base.Open();
+        }
+
+        public override IMenu ExecuteCommand()
+        {
+            ICommand command = null;
+            int actualIndex = (this.currentPage * 10) + this.currentIndex;
+            if (this.currentIndex > 0 && this.currentIndex < 10)
+            {
+                command = this.commandFactory.CreateCommand("ViewCategoryMenu");
+            }
+            else
+            {
+                command = this.commandFactory.CreateCommand(string.Join(string.Empty, this.CurrentOption.Text.Split()));
+            }
+
+            return command.Execute(actualIndex.ToString());
+        }
+
+        public void ChangePage(bool forward = true)
+        {
+            this.currentPage += forward ? 1 : -1;
+            this.currentIndex = 0;
+            this.Open();
+        }
 
         protected override void InitializeStaticLabels(Position consoleCenter)
         {
@@ -61,11 +90,11 @@
                 new Position(consoleCenter.Left + 10, consoleCenter.Top + 12), // Next Page
             };
 
-            Position[] categoryButtonPositions = new Position[pageSize];
+            Position[] categoryButtonPositions = new Position[PageSize];
 
-            for (int i = 0; i < pageSize; i++)
+            for (int i = 0; i < PageSize; i++)
             {
-                categoryButtonPositions[i] = new Position(consoleCenter.Left - 18, consoleCenter.Top - 8 + i * 2);
+                categoryButtonPositions[i] = new Position(consoleCenter.Left - 18, consoleCenter.Top - 8 + (i * 2));
             }
 
             IList<IButton> buttons = new List<IButton>();
@@ -75,7 +104,7 @@
             {
                 ICategoryInfoViewModel category = null;
 
-                int categoryIndex = i + this.currentPage * pageSize;
+                int categoryIndex = i + (this.currentPage * PageSize);
 
                 if (categoryIndex < this.categories.Length)
                 {
@@ -83,7 +112,7 @@
                 }
 
                 string postsCount = category?.PostCount.ToString();
-                string buffer = new string(' ', categoryNameLength - category?.Name.Length ?? 0 - postsCount?.Length ?? 0);
+                string buffer = new string(' ', CategoryNameLength - category?.Name.Length ?? 0 - postsCount?.Length ?? 0);
                 string buttonText = category?.Name + buffer + postsCount;
 
                 IButton button = this.labelFactory.CreateButton(buttonText, categoryButtonPositions[i], category == null);
@@ -97,39 +126,9 @@
             this.Buttons = buttons.ToArray();
         }
 
-        public override void Open()
-        {
-            this.LoadCategories();
-
-            base.Open();
-        }
-
         private void LoadCategories()
         {
             this.categories = this.postService.GetAllCategories().ToArray();
-        }
-
-        public override IMenu ExecuteCommand()
-        {
-            ICommand command = null;
-            int actualIndex = this.currentPage * 10 + this.currentIndex;
-            if (this.currentIndex > 0 && this.currentIndex < 10)
-            {
-                command = this.commandFactory.CreateCommand("ViewCategoryMenu");
-            }
-            else
-            {
-                command = this.commandFactory.CreateCommand(string.Join("", this.CurrentOption.Text.Split()));
-            }
-
-            return command.Execute(actualIndex.ToString());
-        }
-
-        public void ChangePage(bool forward = true)
-        {
-            this.currentPage += forward ? 1 : -1;
-            this.currentIndex = 0;
-            this.Open();
         }
     }
 }

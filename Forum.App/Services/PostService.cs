@@ -1,12 +1,12 @@
 ﻿namespace Forum.App.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Forum.App.Contracts;
     using Forum.App.Contracts.ViewModels;
     using Forum.Data;
     using Forum.DataModels;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class PostService : IPostService
     {
@@ -29,33 +29,18 @@
             {
                 throw new ArgumentException("All fields must be filled!!");
             }
+
             Category category = this.EnsureCategory(postCategory);
-
-            int postId = forumData.Posts.Any() ? forumData.Posts.Last().Id + 1 : 1;
-
+            int postId = this.forumData.Posts.Any() ? this.forumData.Posts.Last().Id + 1 : 1;
             User author = this.userService.GetUserById(userId);
-
             Post post = new Post(postId, postTitle, postContent, category.Id, userId, new List<int>());
 
-            forumData.Posts.Add(post);
+            this.forumData.Posts.Add(post);
             author.Posts.Add(post.Id);
             category.Posts.Add(post.Id);
-            forumData.SaveChanges();
+            this.forumData.SaveChanges();
 
             return post.Id;
-        }
-
-        private Category EnsureCategory(string postCategory)
-        {
-            Category category = this.forumData.Categories.FirstOrDefault(e => e.Name == postCategory);
-
-            if (category == null)
-            {
-                int categoryId = this.forumData.Categories.LastOrDefault()?.Id + 1 ?? 1;
-                category = new Category(categoryId, postCategory, new List<int>());
-                this.forumData.Categories.Add(category);
-            }
-            return category;
         }
 
         public void AddReplyToPost(int postId, string replyContents, int userId)
@@ -64,7 +49,7 @@
 
             if (post != null)
             {
-                int replyId = forumData.Replies.Any() ? forumData.Posts.Last().Id + 1 : 1;
+                int replyId = this.forumData.Replies.Any() ? this.forumData.Posts.Last().Id + 1 : 1;
                 Reply reply = new Reply(replyId, replyContents, userId, postId);
 
                 this.forumData.Replies.Add(reply);
@@ -117,6 +102,20 @@
                 .Select(r => new ReplyViewModel(this.userService.GetUserName(r.AuthorId), r.Content));
 
             return replies;
+        }
+
+        private Category EnsureCategory(string postCategory)
+        {
+            Category category = this.forumData.Categories.FirstOrDefault(e => e.Name == postCategory);
+
+            if (category == null)
+            {
+                int categoryId = this.forumData.Categories.LastOrDefault()?.Id + 1 ?? 1;
+                category = new Category(categoryId, postCategory, new List<int>());
+                this.forumData.Categories.Add(category);
+            }
+
+            return category;
         }
     }
 }

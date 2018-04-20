@@ -1,9 +1,6 @@
 ﻿namespace Forum.App.Commands
 {
     using Forum.App.Contracts;
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
 
     public class AddReplyMenuCommand : ICommand
     {

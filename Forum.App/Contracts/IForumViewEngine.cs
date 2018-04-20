@@ -2,12 +2,12 @@
 {
     public interface IForumViewEngine
     {
-		void RenderMenu(IMenu menu);
+        void RenderMenu(IMenu menu);
 
-		void Mark(ILabel label, bool highlighted = true);
+        void Mark(ILabel label, bool highlighted = true);
 
-		void SetBufferHeight(int rows);
+        void SetBufferHeight(int rows);
 
-		void ResetBuffer();
+        void ResetBuffer();
     }
 }

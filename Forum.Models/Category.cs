@@ -4,14 +4,14 @@
 
     public class Category
     {
-	    public Category()
-	    {
-	    }
-        
-	    public Category(string name)
-	    {
-		    this.Name = name;
-	    }
+        public Category()
+        {
+        }
+
+        public Category(string name)
+        {
+            this.Name = name;
+        }
 
         public Category(int id, string name, IEnumerable<int> posts)
         {
@@ -22,9 +22,8 @@
 
         public int Id { get; set; }
 
-		public string Name { get; set; }
+        public string Name { get; set; }
 
         public ICollection<int> Posts { get; set; } = new List<int>();
-
     }
 }

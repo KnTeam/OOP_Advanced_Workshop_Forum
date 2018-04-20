@@ -1,68 +1,68 @@
 ﻿namespace Forum.App.Menus
 {
-	using Models;
-	using Contracts;
+    using Contracts;
+    using Models;
 
-	public abstract class Menu : IMenu
-	{
-		protected int currentIndex;
+    public abstract class Menu : IMenu
+    {
+        protected int currentIndex;
 
-		public Menu()
-		{
-			this.currentIndex = 0;
-		}
+        public Menu()
+        {
+            this.currentIndex = 0;
+        }
 
-		public ILabel[] Labels { get; protected set; }
+        public ILabel[] Labels { get; protected set; }
 
-		public IButton[] Buttons { get; protected set; }
+        public IButton[] Buttons { get; protected set; }
 
-		public IButton CurrentOption => this.Buttons[currentIndex];
+        public IButton CurrentOption => this.Buttons[this.currentIndex];
 
-		public abstract IMenu ExecuteCommand();
+        public abstract IMenu ExecuteCommand();
 
-		public virtual void Open()
-		{
-			Position consoleCenter = Position.ConsoleCenter();
+        public virtual void Open()
+        {
+            Position consoleCenter = Position.ConsoleCenter();
 
-			this.InitializeStaticLabels(consoleCenter);
+            this.InitializeStaticLabels(consoleCenter);
 
-			this.InitializeButtons(consoleCenter);
-		}
+            this.InitializeButtons(consoleCenter);
+        }
 
-		protected abstract void InitializeStaticLabels(Position consoleCenter);
+        public void NextOption()
+        {
+            this.currentIndex++;
 
-		protected abstract void InitializeButtons(Position consoleCenter);
+            int totalOptions = this.Buttons.Length;
 
-		public void NextOption()
-		{
-			this.currentIndex++;
+            if (this.currentIndex >= totalOptions)
+            {
+                this.currentIndex -= totalOptions;
+            }
 
-			int totalOptions = this.Buttons.Length;
+            if (this.CurrentOption.IsHidden)
+            {
+                this.NextOption();
+            }
+        }
 
-			if (this.currentIndex >= totalOptions)
-			{
-				this.currentIndex -= totalOptions;
-			}
+        public void PreviousOption()
+        {
+            this.currentIndex--;
 
-			if (this.CurrentOption.IsHidden)
-			{
-				this.NextOption();
-			}
-		}
+            if (this.currentIndex < 0)
+            {
+                this.currentIndex += this.Buttons.Length;
+            }
 
-		public void PreviousOption()
-		{
-			this.currentIndex--;
+            if (this.CurrentOption.IsHidden)
+            {
+                this.PreviousOption();
+            }
+        }
 
-			if (this.currentIndex < 0)
-			{
-				this.currentIndex += this.Buttons.Length;
-			}
+        protected abstract void InitializeStaticLabels(Position consoleCenter);
 
-			if (this.CurrentOption.IsHidden)
-			{
-				this.PreviousOption();
-			}
-		}
-	}
+        protected abstract void InitializeButtons(Position consoleCenter);
+    }
 }

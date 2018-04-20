@@ -2,6 +2,6 @@
 {
     public interface IMenuFactory
     {
-		IMenu CreateMenu(string menuName);
+        IMenu CreateMenu(string menuName);
     }
 }

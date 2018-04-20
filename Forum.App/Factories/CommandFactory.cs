@@ -1,12 +1,12 @@
 ﻿namespace Forum.App.Factories
 {
-	using Contracts;
     using System;
     using System.Linq;
     using System.Reflection;
+    using Contracts;
 
     public class CommandFactory : ICommandFactory
-	{
+    {
         private IServiceProvider serviceProvider;
 
         public CommandFactory(IServiceProvider serviceProvider)
@@ -14,14 +14,14 @@
             this.serviceProvider = serviceProvider;
         }
 
-		public ICommand CreateCommand(string commandName)
-		{
+        public ICommand CreateCommand(string commandName)
+        {
             Assembly assembly = Assembly.GetExecutingAssembly();
 
             Type commandType = assembly.GetTypes()
                 .FirstOrDefault(x => x.Name == commandName + "Command");
 
-            if(commandType == null)
+            if (commandType == null)
             {
                 throw new InvalidOperationException("Command not found!");
             }
@@ -43,6 +43,6 @@
             ICommand command = (ICommand)Activator.CreateInstance(commandType, args);
 
             return command;
-		}
-	}
+        }
+    }
 }

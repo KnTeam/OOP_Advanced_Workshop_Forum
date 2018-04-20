@@ -2,12 +2,12 @@
 {
     public interface IForumReader
     {
-		string ReadLine();
+        string ReadLine();
 
-		string ReadLine(int left, int top);
+        string ReadLine(int left, int top);
 
-		void HideCursor();
+        void HideCursor();
 
-		void ShowCursor();
+        void ShowCursor();
     }
 }

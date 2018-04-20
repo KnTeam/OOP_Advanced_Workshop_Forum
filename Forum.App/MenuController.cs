@@ -1,19 +1,18 @@
 ﻿namespace Forum.App
 {
-	using System;
+    using System;
 
-	using Microsoft.Extensions.DependencyInjection;
+    using Contracts;
+    using Menus;
+    using Microsoft.Extensions.DependencyInjection;
 
-	using Contracts;
-	using Menus;
+    internal class MenuController : IMainController
+    {
+        private IServiceProvider serviceProvider;
 
-	internal class MenuController : IMainController
-	{
-		private IServiceProvider serviceProvider;
-
-		private IForumViewEngine viewEngine;
-		private ISession session;
-		private ICommandFactory commandFactory;
+        private IForumViewEngine viewEngine;
+        private ISession session;
+        private ICommandFactory commandFactory;
 
         public MenuController(IServiceProvider serviceProvider, IForumViewEngine viewEngine, ISession session, ICommandFactory commandFactory)
         {
@@ -25,54 +24,55 @@
             this.InitializeSession();
         }
 
-		private string Username { get; set; }
+        private string Username { get; set; }
 
-		private IMenu CurrentMenu => this.session.CurrentMenu;
+        private IMenu CurrentMenu => this.session.CurrentMenu;
 
-		private void InitializeSession()
-		{
-			this.session.PushView(new MainMenu(this.session,
-				this.serviceProvider.GetService<ILabelFactory>(),
-				this.serviceProvider.GetService<ICommandFactory>()));
+        public void MarkOption()
+        {
+            this.viewEngine.Mark(this.CurrentMenu.CurrentOption);
+        }
 
-			this.RenderCurrentView();
-		}
+        public void UnmarkOption()
+        {
+            this.viewEngine.Mark(this.CurrentMenu.CurrentOption, false);
+        }
 
-		private void RenderCurrentView()
-		{
-			this.viewEngine.RenderMenu(this.CurrentMenu);
-		}
+        public void NextOption()
+        {
+            this.CurrentMenu.NextOption();
+        }
 
-		public void MarkOption()
-		{
-			this.viewEngine.Mark(this.CurrentMenu.CurrentOption);
-		}
+        public void PreviousOption()
+        {
+            this.CurrentMenu.PreviousOption();
+        }
 
-		public void UnmarkOption()
-		{
-			this.viewEngine.Mark(this.CurrentMenu.CurrentOption, false);
-		}
+        public void Back()
+        {
+            this.session.Back();
+            this.RenderCurrentView();
+        }
 
-		public void NextOption()
-		{
-			this.CurrentMenu.NextOption();
-		}
+        public void Execute()
+        {
+            this.session.PushView(this.CurrentMenu.ExecuteCommand());
+            this.RenderCurrentView();
+        }
 
-		public void PreviousOption()
-		{
-			this.CurrentMenu.PreviousOption();
-		}
+        private void RenderCurrentView()
+        {
+            this.viewEngine.RenderMenu(this.CurrentMenu);
+        }
 
-		public void Back()
-		{
-			this.session.Back();
-			RenderCurrentView();
-		}
+        private void InitializeSession()
+        {
+            this.session.PushView(new MainMenu(
+                this.session,
+                this.serviceProvider.GetService<ILabelFactory>(),
+                this.serviceProvider.GetService<ICommandFactory>()));
 
-		public void Execute()
-		{
-			this.session.PushView(this.CurrentMenu.ExecuteCommand());
-			this.RenderCurrentView();
-		}
-	}
+            this.RenderCurrentView();
+        }
+    }
 }

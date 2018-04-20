@@ -1,25 +1,25 @@
 ﻿namespace Forum.App.Contracts
 {
-	using DataModels;
+    using DataModels;
 
-	public interface ISession
+    public interface ISession
     {
-		string Username { get; }
+        string Username { get; }
 
-		int UserId { get; }
+        int UserId { get; }
 
-		bool IsLoggedIn { get; }
+        bool IsLoggedIn { get; }
 
-		IMenu CurrentMenu { get; }
+        IMenu CurrentMenu { get; }
 
-		void LogIn(User user);
+        void LogIn(User user);
 
-		void LogOut();
+        void LogOut();
 
-		IMenu Back();
+        IMenu Back();
 
-		bool PushView(IMenu view);
+        bool PushView(IMenu view);
 
-		void Reset();
-	}
+        void Reset();
+    }
 }

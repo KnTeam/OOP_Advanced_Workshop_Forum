@@ -1,15 +1,15 @@
 ﻿namespace Forum.App.Menus
 {
-    using System.Linq;
     using System.Collections.Generic;
+    using System.Linq;
 
-    using Models;
     using Contracts;
+    using Models;
 
     public class ViewPostMenu : Menu, IIdHoldingMenu
     {
-        private const int leftOffset = 18;
-        private const int topOffset = 7;
+        private const int LeftOffset = 18;
+        private const int TopOffset = 7;
         private IPostService postService;
         private ILabelFactory labelFactory;
         private ISession session;
@@ -38,14 +38,14 @@
 
             Position consoleCenter = Position.ConsoleCenter();
 
-            InitializeStaticLabels(consoleCenter);
+            this.InitializeStaticLabels(consoleCenter);
 
-            InitializeButtons(consoleCenter);
+            this.InitializeButtons(consoleCenter);
 
             // Add replies
-            int currentRow = consoleCenter.Top - (consoleCenter.Top - topOffset - 3 - this.post.Content.Length) + 1;
+            int currentRow = consoleCenter.Top - (consoleCenter.Top - TopOffset - 3 - this.post.Content.Length) + 1;
 
-            Position repliesStartPosition = new Position(consoleCenter.Left - leftOffset, currentRow++);
+            Position repliesStartPosition = new Position(consoleCenter.Left - LeftOffset, currentRow++);
             int repliesCount = this.post.Replies.Length;
 
             ICollection<ILabel> replyLabels = new List<ILabel>();
@@ -63,16 +63,35 @@
                     Position rowPosition = new Position(repliesStartPosition.Left, ++currentRow);
                     replyLabels.Add(this.labelFactory.CreateLabel(line, rowPosition));
                 }
+
                 currentRow++;
             }
 
             this.Labels = this.Labels.Concat(replyLabels).ToArray();
         }
 
+        public void SetId(int id)
+        {
+            this.postId = id;
+            this.Open();
+        }
+
+        public override IMenu ExecuteCommand()
+        {
+            string commandName = string.Join(string.Empty, this.CurrentOption.Text.Split());
+
+            ICommand command = this.commandFactory.CreateCommand(commandName);
+            IMenu menu = command.Execute(this.postId.ToString());
+
+            this.viewEngine.ResetBuffer();
+
+            return menu;
+        }
+
         protected override void InitializeStaticLabels(Position consoleCenter)
         {
             Position titlePosition =
-                new Position(consoleCenter.Left - this.post.Title.Length / 2, consoleCenter.Top - 10);
+                new Position(consoleCenter.Left - (this.post.Title.Length / 2), consoleCenter.Top - 10);
             Position authorPosition =
                 new Position(consoleCenter.Left - this.post.Author.Length, consoleCenter.Top - 9);
 
@@ -82,14 +101,14 @@
                 this.labelFactory.CreateLabel($"Author: {this.post.Author}", authorPosition),
             };
 
-            int leftPosition = consoleCenter.Left - leftOffset;
+            int leftPosition = consoleCenter.Left - LeftOffset;
 
             int lineCount = this.post.Content.Length;
 
             // Add post contents
             for (int i = 0; i < lineCount; i++)
             {
-                Position position = new Position(leftPosition, consoleCenter.Top - (topOffset - i));
+                Position position = new Position(leftPosition, consoleCenter.Top - (TopOffset - i));
                 ILabel label = this.labelFactory.CreateLabel(this.post.Content[i], position);
                 labels.Add(label);
             }
@@ -101,33 +120,13 @@
         {
             this.Buttons = new IButton[2];
 
-            this.Buttons[0] = this.labelFactory.CreateButton("Back",
-                new Position(consoleCenter.Left + 15, consoleCenter.Top - 3));
-            this.Buttons[1] = this.labelFactory.CreateButton("Add Reply",
-                new Position(consoleCenter.Left + 10, consoleCenter.Top - 4), !this.session.IsLoggedIn);
-        }
-
-        public void SetId(int id)
-        {
-            this.postId = id;
-            this.Open();
+            this.Buttons[0] = this.labelFactory.CreateButton("Back", new Position(consoleCenter.Left + 15, consoleCenter.Top - 3));
+            this.Buttons[1] = this.labelFactory.CreateButton("Add Reply", new Position(consoleCenter.Left + 10, consoleCenter.Top - 4), !this.session.IsLoggedIn);
         }
 
         private void LoadPost()
         {
             this.post = this.postService.GetPostViewModel(this.postId);
-        }
-
-        public override IMenu ExecuteCommand()
-        {
-            string commandName = string.Join("", this.CurrentOption.Text.Split());
-            
-            ICommand command = commandFactory.CreateCommand(commandName);
-            IMenu menu = command.Execute(this.postId.ToString());
-
-            this.viewEngine.ResetBuffer();
-
-            return menu;
         }
 
         private void ExtendBuffer()
@@ -141,7 +140,7 @@
 
             if (totalLines > 30)
             {
-                viewEngine.SetBufferHeight(totalLines);
+                this.viewEngine.SetBufferHeight(totalLines);
             }
         }
     }
